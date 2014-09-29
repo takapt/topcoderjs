@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+    <script src=underscore.js></script>
+    <script src=topcoderutil.js></script>
+
+    <script>
+        var url = "http://community.topcoder.com/tc?module=BasicData&c=dd_marathon_round_results&rd=16012";
+        $.ajax({
+            url: url,
+            type: "GET",
+            dataType: "xml",
+            success: function (xml) {
+                codersForRated = [];
+                coderForNewMember = [];
+                $(xml).find("row").each(function () {
+                    var row = $(this);
+                    var coder = {
+                        handle: row.find("handle").text(),
+                        rating: Number(row.find("old_rating").text()),
+                        volatility: Number(row.find("old_volatility").text()),
+
+                        timesPlayed: Number(row.find("num_ratings").text()),
+                        rank: Number(row.find("placed").text())
+                    };
+                    if (coder.rating > 0) {
+                        codersForRated.push(coder);
+                        coderForNewMember.push(coder);
+                    }
+                    else {
+                        coderForNewMember.push({rating: 1200, volatility: 515, timesPlayed: 0});
+                    }
+                });
+
+
+                nn = { rating: 1200, volatility: 515, timesPlayed: 0 };
+
+                r = new RatingSystem(codersForRated);
+                rr = new RatingSystem(coderForNewMember);
+
+                alert(rr.calc(nn, rr.numCoders).rating);
+            }
+        });
+
+    </script>
+</html>
